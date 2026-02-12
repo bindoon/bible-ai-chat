@@ -29,9 +29,23 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// 健康检查
+// 健康检查接口
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: Date.now(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: Date.now(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
 });
 
 // 生成 RTC Token

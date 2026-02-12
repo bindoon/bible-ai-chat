@@ -11,7 +11,12 @@
     "dev": "concurrently \"npm run dev -w client\" \"npm run dev -w server\"",
     "build": "npm run build -w client",
     "server": "npm run dev -w server",
-    "client": "npm run dev -w client"
+    "client": "npm run dev -w client",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop voice-chat-api",
+    "pm2:restart": "pm2 restart voice-chat-api",
+    "pm2:logs": "pm2 logs voice-chat-api",
+    "pm2:monit": "pm2 monit"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
