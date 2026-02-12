@@ -42,6 +42,7 @@ export function useRTC(roomId: string) {
   const [error, setError] = useState<string | null>(null);
   const [remoteUsers, setRemoteUsers] = useState<RemoteUser[]>([]);
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [currentUserName, setCurrentUserName] = useState<string>('');
   
   const clientRef = useRef<RTCClient | null>(null);
   const localStreamRef = useRef<AudioTrack | null>(null);
@@ -110,6 +111,7 @@ export function useRTC(roomId: string) {
       
       // 5. 加入频道
       const userNickname = getUserNickname() || `用户_${userIdRef.current.slice(-4)}`;
+      setCurrentUserName(userNickname);
       await client.join({
         appId: tokenData.appId,
         token: tokenData.token,
@@ -190,6 +192,7 @@ export function useRTC(roomId: string) {
     error,
     remoteUsers,
     isMuted,
+    currentUserName,
     toggleMute,
     leave,
   };

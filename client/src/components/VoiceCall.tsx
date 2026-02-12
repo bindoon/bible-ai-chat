@@ -6,7 +6,7 @@ interface VoiceCallProps {
 }
 
 function VoiceCall({ roomId }: VoiceCallProps) {
-  const { status, error, remoteUsers, isMuted, toggleMute, leave } = useRTC(roomId);
+  const { status, error, remoteUsers, isMuted, currentUserName, toggleMute, leave } = useRTC(roomId);
 
   const getStatusText = () => {
     switch (status) {
@@ -73,7 +73,7 @@ function VoiceCall({ roomId }: VoiceCallProps) {
                 <div className="participant local">
                   <div className="participant-avatar">👤</div>
                   <div className="participant-info">
-                    <span className="participant-name">你</span>
+                    <span className="participant-name">{currentUserName}（你）</span>
                     {isMuted && <span className="muted-badge">🔇</span>}
                   </div>
                 </div>
@@ -89,7 +89,7 @@ function VoiceCall({ roomId }: VoiceCallProps) {
                       <div className="participant-avatar">👥</div>
                       <div className="participant-info">
                         <span className="participant-name">
-                          {user.userName || `用户_${user.userId.slice(-4)}`}
+                          {user.userName}
                         </span>
                         <span className="connected-badge">🟢 已连接</span>
                       </div>
