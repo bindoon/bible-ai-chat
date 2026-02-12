@@ -1,7 +1,11 @@
 import { useRTC } from '../hooks/useRTC';
 import './VoiceCall.css';
 
-function VoiceCall({ roomId }) {
+interface VoiceCallProps {
+  roomId: string;
+}
+
+function VoiceCall({ roomId }: VoiceCallProps) {
   const { status, error, remoteUsers, isMuted, toggleMute, leave } = useRTC(roomId);
 
   const getStatusText = () => {
@@ -36,7 +40,7 @@ function VoiceCall({ roomId }) {
         <div className="status-section">
           <div className="status-icon">{getStatusIcon()}</div>
           <h2 className="status-text">{getStatusText()}</h2>
-          {error && (
+          {status === 'error' && error && (
             <div className="error-message">
               <p>❌ 错误: {error}</p>
               <p className="error-hint">
