@@ -11,7 +11,7 @@ module.exports = {
       // 环境变量
       env: {
         NODE_ENV: 'production',
-        PORT: 3001,
+        PORT: 3020,
       },
       
       // 日志

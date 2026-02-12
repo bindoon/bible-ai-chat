@@ -19,7 +19,7 @@ const io = new Server(server, {
     credentials: true
   }
 });
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3020;
 const HOST = '0.0.0.0'; // 监听所有网络接口
 
 // 中间件
