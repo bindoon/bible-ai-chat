@@ -1,0 +1,19 @@
+{
+  "name": "voice-chat-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "在线语音聊天应用 - 基于阿里云 RTC",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w client\" \"npm run dev -w server\"",
+    "build": "npm run build -w client",
+    "server": "npm run dev -w server",
+    "client": "npm run dev -w client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
