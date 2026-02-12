@@ -101,10 +101,10 @@ export function useRTC(roomId: string) {
       });
       
       // 4. 监听错误事件（仅记录非致命错误）
-      client.on('error', (err) => {
+      client.on('error', (err: any) => {
         console.error('RTC error:', err);
         // 只有在未连接时才设置错误状态，避免临时错误影响用户体验
-        if (clientRef.current?.connectionState !== 'CONNECTED') {
+        if (status !== 'connected') {
           setError(err.message || '发生未知错误');
         }
       });
