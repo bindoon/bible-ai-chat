@@ -45,10 +45,24 @@ export function generateRoomId(): string {
 }
 
 /**
- * 生成随机用户 ID
+ * 生成或获取持久化的用户 ID（刷新页面保持不变）
  */
 export function generateUserId(): string {
-  return `user_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+  const STORAGE_KEY = 'user_id';
+  
+  // 先尝试从 localStorage 获取已有的用户 ID
+  let userId = localStorage.getItem(STORAGE_KEY);
+  
+  // 如果不存在，生成新的 ID 并保存
+  if (!userId) {
+    userId = `user_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    localStorage.setItem(STORAGE_KEY, userId);
+    console.log('Generated new persistent userId:', userId);
+  } else {
+    console.log('Using existing userId from storage:', userId);
+  }
+  
+  return userId;
 }
 
 /**
@@ -70,4 +84,13 @@ export function getUserNickname(): string | null {
  */
 export function setUserNickname(nickname: string): void {
   localStorage.setItem('user_nickname', nickname);
+}
+
+/**
+ * 清除用户身份信息（用于重置为新用户）
+ */
+export function clearUserIdentity(): void {
+  localStorage.removeItem('user_id');
+  localStorage.removeItem('user_nickname');
+  console.log('User identity cleared');
 }
