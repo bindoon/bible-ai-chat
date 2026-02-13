@@ -115,3 +115,6 @@ npm run pm2:stop     # 停止服务
 - ✅ 响应式 UI 设计
 
 **配置要求**: `server/.env` 需配置 `ALIYUN_APP_ID` 和 `ALIYUN_APP_KEY`
+
+
+阿里云文档 https://help.aliyun.com/document_detail/2640100.html

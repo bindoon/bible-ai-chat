@@ -94,8 +94,7 @@ npm install alivc-rtc  # 注意：需要确认正确的 SDK 包名
 ```
 
 2. 在 `client/src/hooks/useRTC.js` 中：
-   - 替换标记为 `TODO` 的部分
-   - 参考 [阿里云 RTC Web SDK 文档](https://help.aliyun.com/document_detail/xxx.html)
+   - 参考 [阿里云 RTC Web SDK 文档](https://help.aliyun.com/document_detail/2640100.html)
    - 集成真实的 SDK API
 
 临时实现可以：
