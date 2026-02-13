@@ -135,7 +135,6 @@ function VoiceCall({ roomId }: VoiceCallProps) {
           <li>首次使用需要允许浏览器访问麦克风</li>
           <li>建议使用耳机以避免回音</li>
           <li>网络不稳定可能导致掉线，请尝试刷新</li>
-          <li>目前仅支持双人通话</li>
         </ul>
       </div>
     </div>
