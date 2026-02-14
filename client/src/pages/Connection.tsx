@@ -135,7 +135,7 @@ export default function Connection() {
     const [lang, setLang] = useState<'en' | 'zh'>('en');
     const [form, setForm] = useState({ name: '', email: '', question: '' });
     const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-    const [showPrivacy, setShowPrivacy] = useState(false);
+    // const [showPrivacy, setShowPrivacy] = useState(false);
     const socketRef = useRef<any>(null);
 
     useEffect(() => {
@@ -160,7 +160,7 @@ export default function Connection() {
         // Check privacy consent
         const consented = localStorage.getItem('privacy_consented');
         if (!consented) {
-            setShowPrivacy(true);
+            // setShowPrivacy(true);
         }
 
         return () => {
