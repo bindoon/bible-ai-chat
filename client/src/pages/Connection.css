@@ -327,11 +327,22 @@
 /* Pastors Grid */
 .pastors-grid {
     display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 1.5rem;
+    overflow-x: auto;
+    padding: 1rem 0.5rem;
     margin-top: 2rem;
     margin-bottom: 2rem;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+    max-width: 100vw;
+}
+
+.pastors-grid::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
 }
 
 .pastor-card {
@@ -339,7 +350,11 @@
     backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 1.5rem;
-    width: 200px;
+    min-width: 200px;
+    /* Changed from width to min-width/flex-basis */
+    width: 220px;
+    flex: 0 0 auto;
+    /* Prevent shrinking */
     transition: transform 0.3s ease;
     cursor: default;
     border: 1px solid rgba(255, 255, 255, 0.1);

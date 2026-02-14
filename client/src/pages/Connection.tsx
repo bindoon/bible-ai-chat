@@ -2,18 +2,21 @@ import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useRTC } from '../hooks/useRTC';
 import './Connection.css';
+import pastorHoman from '../assets/Pastor_Homan.jpg';
+import pastorTim from '../assets/Pastor_Tim.jpg';
+import pastorWong from '../assets/Pastor_Wong.jpg';
 
 // --- Mock Data & Constants ---
 const ROOM_ID = '000001';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3020';
 
 const PASTORS = [
-    { id: 'p1', name: 'Pastor John', role: 'Youth Ministry', avatar: '👨‍⚖️', status: 'busy' },
-    { id: 'p2', name: 'Pastor Sarah', role: 'Family Counseling', avatar: '👩‍⚕️', status: 'busy' },
-    { id: 'p3', name: 'Pastor David', role: 'Spiritual Formation', avatar: '👨‍🏫', status: 'busy' },
-    { id: 'p4', name: 'Pastor Mary', role: 'Career Counseling', avatar: '👩‍🎓', status: 'busy' },
-    { id: 'p5', name: 'Pastor Paul', role: 'Community Outreach', avatar: '🧔', status: 'offline' },
-    { id: 'p6', name: 'Pastor Anna', role: 'Kids Ministry', avatar: '👩‍🏫', status: 'offline' },
+    { id: 'p1', name: 'Pastor Homan', role: 'Youth Ministry', avatar: pastorHoman, status: 'busy', type: 'image' },
+    { id: 'p2', name: 'Pastor Tim', role: 'Family Counseling', avatar: pastorTim, status: 'busy', type: 'image' },
+    { id: 'p3', name: 'Pastor Wong', role: 'Spiritual Formation', avatar: pastorWong, status: 'busy', type: 'image' },
+    { id: 'p4', name: 'Pastor Mary', role: 'Career Counseling', avatar: '👩‍🎓', status: 'busy', type: 'emoji' },
+    { id: 'p5', name: 'Pastor Paul', role: 'Community Outreach', avatar: '🧔', status: 'offline', type: 'emoji' },
+    { id: 'p6', name: 'Pastor Anna', role: 'Kids Ministry', avatar: '👩‍🏫', status: 'offline', type: 'emoji' },
 ];
 
 // --- Sub-component for Active Call ---
@@ -244,8 +247,20 @@ export default function Connection() {
                 <div className="pastors-grid">
                     {PASTORS.map(p => (
                         <div key={p.id} className="pastor-card">
-                            <div className="pastor-avatar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', background: '#333', margin: '0 auto 1rem' }}>
-                                {p.avatar}
+                            <div className="pastor-avatar" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '2rem',
+                                background: '#333',
+                                margin: '0 auto 1rem',
+                                overflow: 'hidden'
+                            }}>
+                                {p.type === 'image' ? (
+                                    <img src={p.avatar} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    p.avatar
+                                )}
                             </div>
                             <div className="pastor-name">{p.name}</div>
                             <div className="pastor-role">{p.role}</div>
