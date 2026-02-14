@@ -51,13 +51,13 @@ function ActiveSession({ onLeave, lang = 'en' }: { onLeave: () => void, lang?: '
     };
 
     const t = {
-        connected: lang === 'en' ? 'Connected' : '已连接',
-        connecting: lang === 'en' ? 'Connecting...' : '连接中...',
-        waiting: lang === 'en' ? 'Waiting for pastors...' : '等待牧师加入...',
+        connected: lang === 'en' ? 'Connected' : '已連接',
+        connecting: lang === 'en' ? 'Connecting...' : '連接中...',
+        waiting: lang === 'en' ? 'Waiting for pastors...' : '等待牧師加入...',
         me: lang === 'en' ? 'Me' : '我',
-        mute: lang === 'en' ? 'Mute' : '静音',
-        unmute: lang === 'en' ? 'Unmute' : '取消静音',
-        leave: lang === 'en' ? 'Leave' : '离开',
+        mute: lang === 'en' ? 'Mute' : '靜音',
+        unmute: lang === 'en' ? 'Unmute' : '取消靜音',
+        leave: lang === 'en' ? 'Leave' : '離開',
     };
 
     return (
@@ -135,6 +135,7 @@ export default function Connection() {
     const [lang, setLang] = useState<'en' | 'zh'>('en');
     const [form, setForm] = useState({ name: '', email: '', question: '' });
     const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+    const [showPrivacy, setShowPrivacy] = useState(false);
     const socketRef = useRef<any>(null);
 
     useEffect(() => {
@@ -155,6 +156,12 @@ export default function Connection() {
             .then(res => res.json())
             .then(data => setStats(data))
             .catch(err => console.error('Failed to fetch stats:', err));
+
+        // Check privacy consent
+        const consented = localStorage.getItem('privacy_consented');
+        if (!consented) {
+            setShowPrivacy(true);
+        }
 
         return () => {
             if (socketRef.current) socketRef.current.disconnect();
@@ -190,19 +197,22 @@ export default function Connection() {
     };
 
     const t = {
-        title: lang === 'en' ? 'Uniting lives, sowing love, and illuminating the world.' : '联结生命，播撒大爱，照亮世界。',
+        title: lang === 'en' ? 'Connecting the World through Grace, Shepherding Souls into Peace.' : '以大愛連結世界，為靈魂搭建避風港。',
         subtitle: lang === 'en'
-            ? 'The pastor has just finished a session and is currently unavailable. Leave your email, and you\'ll be the first to know when they are ready to connect.'
-            : '牧师刚结束一场语音连线，留下你的邮箱，牧师方便了第一时间通知你。',
-        joinBtn: lang === 'en' ? 'Connect Now' : '立即连线',
-        leaveInfo: lang === 'en' ? 'Leave your email, and the pastor will notify you as soon as they become available.' : '留下你的邮箱，牧师方便了第一时间通知你。',
+            ? 'We bridge the gap between global pastoral care and your daily struggles. Here, we carry your burdens together, offering spiritual wisdom and compassionate listening to illuminate your path.'
+            : '我們匯聚全球牧者的慈愛與智慧，致力於消除心靈的隔閡。無論您身在何處，這裡都有願意傾聽的耳朵與為您禱告的心，助您卸下重擔，重獲屬天的平安。',
+        joinBtn: lang === 'en' ? 'Connect Now' : '立即連線',
+        leaveInfo: lang === 'en' ? 'Leave your email, and the pastor will notify you as soon as they become available.' : '留下你的郵箱，牧師方便了第一時間通知你。',
         namePlaceholder: lang === 'en' ? 'Your Name' : '你的名字',
-        emailPlaceholder: lang === 'en' ? 'Your Email' : '你的邮箱',
-        questionPlaceholder: lang === 'en' ? 'Your Question' : '你想咨询的问题',
-        submitBtn: lang === 'en' ? 'Contact Pastor' : '预约牧师',
-        visitors: lang === 'en' ? 'Visitors' : '访问人数',
-        activePromise: lang === 'en' ? 'Praying Now' : '正在祷告',
-        emails: lang === 'en' ? 'Prayer Requests' : '代祷请求',
+        emailPlaceholder: lang === 'en' ? 'Your Email' : '你的郵箱',
+        questionPlaceholder: lang === 'en' ? 'Your Question' : '你想諮詢的問題',
+        submitBtn: lang === 'en' ? 'Contact Pastor' : '預約牧師',
+        visitors: lang === 'en' ? 'Visitors' : '訪問人數',
+        activePromise: lang === 'en' ? 'Praying Now' : '正在禱告',
+        emails: lang === 'en' ? 'Prayer Requests' : '代禱請求',
+        selectPastor: lang === 'en' ? 'Select a Pastor' : '選擇你想預約連線的牧師',
+        privacyText: lang === 'en' ? 'We value your privacy. By using our site, you consent to our data processing policies.' : '我們重視您的隱私。使用本網站即表示您同意我們的數據處理政策。',
+        acceptBtn: lang === 'en' ? 'Accept & Continue' : '接受並繼續',
     };
 
     return (
@@ -220,7 +230,7 @@ export default function Connection() {
                         {lang === 'en' ? 'Share' : '分享'}
                     </button>
                     <button onClick={() => setLang(l => l === 'en' ? 'zh' : 'en')} className="leave-btn">
-                        {lang === 'en' ? '中文' : 'English'}
+                        {lang === 'en' ? '繁體中文' : 'English'}
                     </button>
                 </div>
             </header>
@@ -232,30 +242,22 @@ export default function Connection() {
                 </div>
 
                 {!joined ? (
-                    <div className="glass-card" style={{ padding: '3rem', textAlign: 'center' }}>
+                    <div className="glass-card" style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🙏</div>
-                        <button className="submit-btn" style={{ maxWidth: '300px', fontSize: '1.2rem' }} onClick={handleJoin}>{t.joinBtn}</button>
+                        <button className="submit-btn" style={{ maxWidth: '300px' }} onClick={handleJoin}>{t.joinBtn}</button>
                     </div>
                 ) : (
                     <ActiveSession onLeave={() => setJoined(false)} lang={lang} />
                 )}
 
                 {/* Pastors Section */}
-                <h3 className="section-title" style={{ marginTop: '3rem', color: '#a5b4fc' }}>
-                    {lang === 'en' ? 'Select a Pastor' : '选择你想预约连线的牧师'}
+                <h3 className="section-title">
+                    {t.selectPastor}
                 </h3>
                 <div className="pastors-grid">
                     {PASTORS.map(p => (
                         <div key={p.id} className="pastor-card">
-                            <div className="pastor-avatar" style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '2rem',
-                                background: '#333',
-                                margin: '0 auto 1rem',
-                                overflow: 'hidden'
-                            }}>
+                            <div className="pastor-avatar">
                                 {p.type === 'image' ? (
                                     <img src={p.avatar} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                 ) : (
@@ -264,7 +266,7 @@ export default function Connection() {
                             </div>
                             <div className="pastor-name">{p.name}</div>
                             <div className="pastor-role">{p.role}</div>
-                            <div style={{ fontSize: '0.8rem', color: p.status === 'online' ? '#4ade80' : '#f87171', marginTop: '0.5rem' }}>• {p.status}</div>
+                            <div style={{ fontSize: '0.85rem', color: p.status === 'online' ? '#16a34a' : '#ef4444', marginTop: '0.5rem', fontWeight: 500 }}>• {p.status}</div>
                         </div>
                     ))}
                 </div>
@@ -274,11 +276,11 @@ export default function Connection() {
                     <h3 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>{t.leaveInfo}</h3>
 
                     {formStatus === 'success' ? (
-                        <div style={{ textAlign: 'center', color: '#4ade80', padding: '2rem' }}>
+                        <div style={{ textAlign: 'center', color: '#16a34a', padding: '2rem' }}>
                             <div style={{ fontSize: '3rem' }}>✓</div>
-                            <p>{lang === 'en' ? 'Thank you! We have received your request.' : '谢谢！我们已收到您的请求。'}</p>
+                            <p>{lang === 'en' ? 'Thank you! We have received your request.' : '謝謝！我們已收到您的請求。'}</p>
                             <button onClick={() => setFormStatus('idle')} className="leave-btn" style={{ marginTop: '1rem' }}>
-                                {lang === 'en' ? 'Send Another' : '再次发送'}
+                                {lang === 'en' ? 'Send Another' : '再次發送'}
                             </button>
                         </div>
                     ) : (
@@ -334,6 +336,24 @@ export default function Connection() {
                     <div className="stat-label">{t.emails}</div>
                 </div>
             </div>
+
+            {/* Privacy Banner */}
+            {/* {showPrivacy && (
+                <div className="privacy-banner">
+                    <div className="privacy-content">
+                        <p>{t.privacyText}</p>
+                        <button
+                            className="privacy-btn"
+                            onClick={() => {
+                                localStorage.setItem('privacy_consented', 'true');
+                                setShowPrivacy(false);
+                            }}
+                        >
+                            {t.acceptBtn}
+                        </button>
+                    </div>
+                </div>
+            )} */}
         </div>
     );
 }
