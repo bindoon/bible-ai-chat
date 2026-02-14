@@ -1,0 +1,51 @@
+# 阿里云云效 Flow 流水线配置
+# 这是简化版的流水线配置，适用于快速部署
+
+name: Voice Chat App Deploy
+
+# 代码源
+sources:
+  - type: codeup  # 或 github/gitlab
+    branch: main
+
+# 环境变量 (需在云效控制台配置)
+variables:
+  DOCKER_REGISTRY: registry.cn-hangzhou.aliyuncs.com
+  NAMESPACE: voice-chat
+  IMAGE_NAME: voice-chat-app
+
+# 流水线步骤
+pipeline:
+  # 构建 Docker 镜像
+  - stage: 构建镜像
+    image: docker:latest
+    script:
+      - docker build -t ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${FLOW_PIPELINE_ID} .
+      - docker tag ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${FLOW_PIPELINE_ID} ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:latest
+      - echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY}
+      - docker push ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${FLOW_PIPELINE_ID}
+      - docker push ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:latest
+
+  # 部署到 ECS
+  - stage: 部署到ECS
+    type: ssh
+    host: ${ECS_HOST}
+    username: ${ECS_USERNAME}
+    script:
+      # 拉取镜像并重启容器
+      - docker pull ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${FLOW_PIPELINE_ID}
+      - docker stop voice-chat || true
+      - docker rm voice-chat || true
+      - |
+        docker run -d \
+          --name voice-chat \
+          --restart unless-stopped \
+          -p 80:80 -p 3001:3001 \
+          -e ALIYUN_APP_ID=${ALIYUN_APP_ID} \
+          -e ALIYUN_APP_KEY=${ALIYUN_APP_KEY} \
+          ${DOCKER_REGISTRY}/${NAMESPACE}/${IMAGE_NAME}:${FLOW_PIPELINE_ID}
+      # 健康检查
+      - sleep 10
+      - curl -f http://localhost/health || exit 1
+      # 清理
+      - docker image prune -f

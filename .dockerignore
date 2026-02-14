@@ -1,0 +1,64 @@
+# Node modules
+node_modules
+*/node_modules
+npm-debug.log*
+
+# 构建产物
+client/dist
+.cache
+
+# 开发文件
+.git
+.gitignore
+*.md
+!README.md
+
+# 环境配置 (使用环境变量注入)
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 测试
+coverage
+.nyc_output
+
+# 日志
+logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PM2
+ecosystem.config.cjs
+
+# 临时文件
+tmp
+temp
+*.tmp
+
+# 证书 (生产环境应使用云服务的证书管理)
+.cert
+*.pem
+*.key
+*.crt
+
+# 部署脚本
+scripts/deploy.sh
+start.sh
+
+# 文档
+DEPLOY*.md
+SETUP.md
+NEXT_STEPS.md
+ALIYUN_RTC_INTEGRATION.md
+HTTPS_SETUP.md
+AGENTS.md

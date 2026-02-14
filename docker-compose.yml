@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  voice-chat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: voice-chat-app
+    restart: unless-stopped
+    ports:
+      - "80:80"      # HTTP 访问
+      - "3001:3001"  # API 端口 (可选，用于调试)
+    environment:
+      # 阿里云 RTC 配置 - 从 .env 文件或环境变量读取
+      - ALIYUN_APP_ID=${ALIYUN_APP_ID}
+      - ALIYUN_APP_KEY=${ALIYUN_APP_KEY}
+      - NODE_ENV=production
+      # 可选配置
+      - PORT=3001
+    # 环境变量文件 (本地开发使用)
+    env_file:
+      - ./server/.env
+    volumes:
+      # 日志持久化 (可选)
+      - ./logs:/var/log/nginx
+    networks:
+      - voice-chat-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  voice-chat-network:
+    driver: bridge
+
+# 可选: 添加 nginx 反向代理 (用于 HTTPS 终止)
+# 如需生产环境 HTTPS, 建议使用阿里云 SLB 或云原生网关

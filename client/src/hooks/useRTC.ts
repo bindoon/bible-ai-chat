@@ -37,13 +37,13 @@ interface AudioTrack {
   setEnabled(enabled: boolean): void;
 }
 
-export function useRTC(roomId: string) {
+export function useRTC(roomId: string, initialMute: boolean = false) {
   const [status, setStatus] = useState<RTCStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [remoteUsers, setRemoteUsers] = useState<RemoteUser[]>([]);
-  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(initialMute);
   const [currentUserName, setCurrentUserName] = useState<string>('');
-  
+
   const clientRef = useRef<RTCClient | null>(null);
   const localStreamRef = useRef<AudioTrack | null>(null);
   const userIdRef = useRef<string>(generateUserId());
@@ -60,21 +60,21 @@ export function useRTC(roomId: string) {
       // 获取 Token
       const tokenData: TokenData = await getToken(roomId, userIdRef.current);
       console.log('Token obtained:', tokenData);
-      
+
       // 1. 创建客户端实例
       const client: RTCClient = DingRTC.createClient();
       clientRef.current = client;
-      
+
       // 2. 监听远端用户发布事件（支持多人动态加入）
       client.on('user-published', async (user: any, mediaType: string) => {
         console.log('Remote user published:', user.userId, mediaType);
-        
+
         // 更新远端用户列表（多人场景）
         setRemoteUsers(prev => {
           const exists = prev.find(u => u.userId === user.userId);
           if (!exists) {
-            const newUser = { 
-              userId: user.userId, 
+            const newUser = {
+              userId: user.userId,
               userName: user.userName || `用户_${user.userId.slice(-4)}`
             };
             console.log('Added new user to list:', newUser);
@@ -82,15 +82,15 @@ export function useRTC(roomId: string) {
           }
           // 用户已存在，更新用户名（如果有变化）
           if (exists.userName !== user.userName && user.userName) {
-            return prev.map(u => 
-              u.userId === user.userId 
+            return prev.map(u =>
+              u.userId === user.userId
                 ? { ...u, userName: user.userName }
                 : u
             );
           }
           return prev;
         });
-        
+
         // MCU 订阅逻辑：只需订阅一次，自动混流所有人的音频
         if (mediaType === 'audio' && !mcuSubscribedRef.current) {
           try {
@@ -104,15 +104,15 @@ export function useRTC(roomId: string) {
           }
         }
       });
-      
+
       // 3. 监听远端用户离开事件
       client.on('user-unpublished', (user: any, mediaType: string) => {
         console.log('Remote user unpublished:', user.userId, mediaType);
-        
+
         // 更新远端用户列表
         setRemoteUsers(prev => prev.filter(u => u.userId !== user.userId));
       });
-      
+
       // 4. 监听错误事件（仅记录非致命错误）
       client.on('error', (err: any) => {
         console.error('RTC error:', err);
@@ -121,7 +121,7 @@ export function useRTC(roomId: string) {
           setError(err.message || '发生未知错误');
         }
       });
-      
+
       // 5. 加入频道
       const userNickname = getUserNickname() || `用户_${userIdRef.current.slice(-4)}`;
       setCurrentUserName(userNickname);
@@ -133,7 +133,7 @@ export function useRTC(roomId: string) {
         userName: userNickname,
       });
       console.log('Joined channel successfully with nickname:', userNickname);
-      
+
       // 5.1 加入后立即获取房间内已有的远端用户列表（支持多人，避免漏掉先加入的用户）
       const remoteUsersList = (client as any).remoteUsers || [];
       console.log('Remote users in room:', remoteUsersList.length);
@@ -145,13 +145,17 @@ export function useRTC(roomId: string) {
         setRemoteUsers(existingUsers);
         console.log('Found existing users:', existingUsers);
       }
-      
+
       // 6. 创建并发布本地音频轨道
       const micTrack: AudioTrack = await DingRTC.createMicrophoneAudioTrack();
       localStreamRef.current = micTrack;
+      if (initialMute) {
+        micTrack.setEnabled(false);
+        console.log('Initially muted');
+      }
       await client.publish([micTrack]);
       console.log('Published local audio');
-      
+
       // 7. 发布后订阅 MCU 音频（支持多人混流）
       try {
         const mcuTrack: AudioTrack = await client.subscribe('mcu', 'audio');
@@ -161,7 +165,7 @@ export function useRTC(roomId: string) {
       } catch (err: any) {
         console.warn('MCU subscription will retry on user-published:', err);
       }
-      
+
       // 连接成功，清除之前的错误
       setError(null);
       setStatus('connected');
@@ -170,14 +174,14 @@ export function useRTC(roomId: string) {
       setError(err.message || '连接失败');
       setStatus('error');
     }
-  }, [roomId]);
+  }, [roomId, initialMute]);
 
   /**
    * 静音/取消静音
    */
   const toggleMute = useCallback(() => {
     if (!localStreamRef.current) return;
-    
+
     try {
       // 使用 DingRTC 的 setEnabled 方法
       localStreamRef.current.setEnabled(!isMuted);
@@ -198,13 +202,13 @@ export function useRTC(roomId: string) {
         localStreamRef.current.close();
         localStreamRef.current = null;
       }
-      
+
       // 离开频道
       if (clientRef.current) {
         await clientRef.current.leave();
         clientRef.current = null;
       }
-      
+
       mcuSubscribedRef.current = false;
       setStatus('idle');
       setRemoteUsers([]);
@@ -217,12 +221,26 @@ export function useRTC(roomId: string) {
   // 组件挂载时初始化
   useEffect(() => {
     initClient();
-    
+
     // 组件卸载时清理
     return () => {
       leave();
     };
   }, [initClient, leave]);
+
+
+
+  /**
+   * Update local user nickname
+   */
+  const updateNickname = useCallback((newName: string) => {
+    setCurrentUserName(newName);
+    // In a real RTC implementation with user attributes, you would also push this update to the server.
+    // DingRTC might handle this via join options or a separate user attribute method.
+    // For now, we update local state. If re-joining is needed, logic would be more complex.
+    // But typically, nickname is set on join. Changing it mid-call often requires re-join or side-channel signaling.
+    // Let's assume for this MVP we just update local state display.
+  }, []);
 
   return {
     status,
@@ -232,5 +250,6 @@ export function useRTC(roomId: string) {
     currentUserName,
     toggleMute,
     leave,
+    updateNickname
   };
 }

@@ -69,6 +69,33 @@ npm run dev
 └── package.json     # Monorepo 配置
 ```
 
+## 生产部署
+
+### Docker 部署 (推荐)
+
+**快速开始:**
+
+```bash
+# 本地测试
+docker-compose up --build
+
+# 部署到阿里云 ECS
+./docker/deploy-to-ecs.sh <ECS_IP> <ALIYUN_APP_ID> <ALIYUN_APP_KEY>
+```
+
+**详细文档:**
+- 📘 [Docker 快速部署指南](./DOCKER_QUICKSTART.md) - 3 步完成部署
+- 📗 [Docker 完整部署文档](./DEPLOY_DOCKER.md) - 包含云效 Flow 配置
+- 📙 [传统 ECS 部署](./DEPLOY_ECS.md) - 使用 PM2 + Nginx
+
+### 部署方式对比
+
+| 方式 | 优势 | 适用场景 |
+|------|------|----------|
+| **Docker** | ✅ 环境一致 ✅ 快速部署 ✅ 易于扩展 | 推荐所有场景 |
+| **云效 Flow** | ✅ CI/CD 自动化 ✅ 版本管理 | 生产环境 |
+| **传统部署** | ✅ 直接控制 ✅ 资源优化 | 简单场景 |
+
 ## 开发说明
 
 - WebRTC 需要安全上下文（HTTPS 或 localhost）
