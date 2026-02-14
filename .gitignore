@@ -29,3 +29,5 @@ Thumbs.db
 *.tgz
 .npm
 .eslintcache
+server/data/contacts.json
+server/data/stats.json

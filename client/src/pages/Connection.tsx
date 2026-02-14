@@ -8,7 +8,7 @@ import pastorWong from '../assets/Pastor_Wong.jpg';
 
 // --- Mock Data & Constants ---
 const ROOM_ID = '000001';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3020';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const PASTORS = [
     { id: 'p1', name: 'Pastor Homan', role: 'Youth Ministry', avatar: pastorHoman, status: 'busy', type: 'image' },
