@@ -19,6 +19,16 @@ const PASTORS = [
     { id: 'p6', name: 'Pastor Anna', role: 'Kids Ministry', avatar: '👩‍🏫', status: 'offline', type: 'emoji' },
 ];
 
+// Helper to get or create device ID
+const getDeviceId = () => {
+    let id = localStorage.getItem('deviceId');
+    if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem('deviceId', id);
+    }
+    return id;
+};
+
 // --- Sub-component for Active Call ---
 function ActiveSession({ onLeave, lang = 'en' }: { onLeave: () => void, lang?: 'en' | 'zh' }) {
     const { status, remoteUsers, isMuted, toggleMute, leave, currentUserName, updateNickname } = useRTC(ROOM_ID, false); // false = initial unmute
@@ -131,7 +141,7 @@ function ActiveSession({ onLeave, lang = 'en' }: { onLeave: () => void, lang?: '
 // --- Main Page Component ---
 export default function Connection() {
     const [joined, setJoined] = useState(false); // Require click to join
-    const [stats, setStats] = useState({ visitors: 1200, messages: 0, emails: 0, activeUsers: 0 });
+    const [stats, setStats] = useState({ visitors: 1200, messages: 0, emails: 0, activeUsers: 0, pv: 0 });
     const [lang, setLang] = useState<'en' | 'zh'>('en');
     const [form, setForm] = useState({ name: '', email: '', question: '' });
     const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -144,7 +154,8 @@ export default function Connection() {
 
         socketRef.current.on('connect', () => {
             console.log('Connected to stats server');
-            socketRef.current.emit('join-room', 'connection'); // Join stats room
+            const deviceId = getDeviceId();
+            socketRef.current.emit('join-room', 'connection', deviceId); // Join stats room with deviceId
         });
 
         socketRef.current.on('stats-update', (newStats: any) => {
@@ -207,8 +218,9 @@ export default function Connection() {
         emailPlaceholder: lang === 'en' ? 'Your Email' : '你的郵箱',
         questionPlaceholder: lang === 'en' ? 'Your Question' : '你想諮詢的問題',
         submitBtn: lang === 'en' ? 'Contact Pastor' : '預約牧師',
-        visitors: lang === 'en' ? 'Visitors' : '訪問人數',
-        activePromise: lang === 'en' ? 'Praying Now' : '正在禱告',
+        visitors: lang === 'en' ? 'Total Users' : '總用戶數',
+        pv: lang === 'en' ? 'Page Views' : '總訪問量',
+        activePromise: lang === 'en' ? 'Active Users' : '當前在線',
         emails: lang === 'en' ? 'Prayer Requests' : '代禱請求',
         selectPastor: lang === 'en' ? 'Select a Pastor' : '選擇你想預約連線的牧師',
         privacyText: lang === 'en' ? 'We value your privacy. By using our site, you consent to our data processing policies.' : '我們重視您的隱私。使用本網站即表示您同意我們的數據處理政策。',
@@ -323,6 +335,10 @@ export default function Connection() {
             </div>
 
             <div className="stats-footer">
+                <div className="stat-item">
+                    <div className="stat-value">{stats.pv || 0}</div>
+                    <div className="stat-label">{t.pv}</div>
+                </div>
                 <div className="stat-item">
                     <div className="stat-value">{stats.visitors}</div>
                     <div className="stat-label">{t.visitors}</div>

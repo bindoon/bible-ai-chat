@@ -6,7 +6,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 
 import tokenGenerator from '@dingrtc/token-generator';
-import { loadStats, saveStats, getStats, incrementStat, saveContact, updateActiveUsers } from './stats.js';
+import { loadStats, saveStats, getStats, incrementStat, saveContact, updateActiveUsers, recordVisit } from './stats.js';
 
 const { produce } = tokenGenerator;
 
@@ -103,17 +103,20 @@ io.on('connection', (socket) => {
   // Send initial stats on connection
   socket.emit('stats-update', getStats());
 
-  socket.on('join-room', (roomId) => {
+  socket.on('join-room', (roomId, deviceId) => {
     socket.join(roomId);
     socket.to(roomId).emit('user-joined', socket.id);
-    console.log(`User ${socket.id} joined room: ${roomId}`);
+    console.log(`User ${socket.id} joined room: ${roomId}, deviceId: ${deviceId}`);
 
     // Update active user count for connection room
     if (roomId === '000001' || roomId === 'connection') {
       const roomSize = io.sockets.adapter.rooms.get(roomId)?.size || 0;
       updateActiveUsers(roomSize);
-      io.emit('stats-update', getStats());
-      incrementStat('visitors'); // Count as a visit
+
+      // Record visit / checks for unique visitor
+      recordVisit(deviceId).then(newStats => {
+        io.emit('stats-update', newStats);
+      });
     }
   });
 
