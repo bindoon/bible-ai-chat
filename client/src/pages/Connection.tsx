@@ -53,7 +53,7 @@ function ActiveSession({ onLeave, lang = 'en' }: { onLeave: () => void, lang?: '
     const t = {
         connected: lang === 'en' ? 'Connected' : '已連接',
         connecting: lang === 'en' ? 'Connecting...' : '連接中...',
-        waiting: lang === 'en' ? '"Help us share God\'s grace—invite a pastor to join us today." ' : '請協助我們分享上帝的恩典——邀請牧師加入我們。',
+        waiting: lang === 'en' ? '"Help us share God\'s grace—invite a pastor to join us today." ' : '“牧師剛結束完連線，您可分享這份上帝的恩典到群組——讓大家邀請一位牧師與您連線。”',
         me: lang === 'en' ? 'Me' : '我',
         mute: lang === 'en' ? 'Mute' : '靜音',
         unmute: lang === 'en' ? 'Unmute' : '取消靜音',
