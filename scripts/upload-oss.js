@@ -9,7 +9,6 @@
  * - OSS_BUCKET: Bucket名称
  * - OSS_BASE_PATH: OSS上传路径前缀，如 daily-static
  * - CDN_BASE_URL: CDN域名，如 https://cdn.example.com/
- * - OSS_ASSETS_FOLDER: OSS上静态资源子目录名，默认 rtcassets（本地 assets/ 映射到此目录）
  * - ALIYUN_OSS_INTERNAL: 是否使用内网上传（true/false），适用于阿里云 VPC 环境
  * 
  * 此脚本会：
@@ -40,8 +39,7 @@ const OSS_CONFIG = {
   accessKeyId: process.env.OSS_ACCESS_KEY_ID,
   accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
   bucket: process.env.OSS_BUCKET || 'us-withjesus',
-  basePath: process.env.OSS_BASE_PATH || 'daily-static',
-  assetsFolder: process.env.OSS_ASSETS_FOLDER || 'rtcassets',
+  basePath: process.env.OSS_BASE_PATH || 'daily-rtc-static',
   internal: process.env.ALIYUN_OSS_INTERNAL === 'true',
 };
 
@@ -219,21 +217,16 @@ async function main() {
   
   // 上传资源文件
   for (const file of assetsToUpload) {
-    // 将本地 assets/ 子目录映射为 OSS 上的 assetsFolder（默认 rtcassets）
-    const ossRelativePath = file.relativePath.startsWith('assets/')
-      ? `${OSS_CONFIG.assetsFolder}/${file.relativePath.slice('assets/'.length)}`
+    const ossPath = OSS_CONFIG.basePath
+      ? `${OSS_CONFIG.basePath}/${file.relativePath}`
       : file.relativePath;
 
-    const ossPath = OSS_CONFIG.basePath
-      ? `${OSS_CONFIG.basePath}/${ossRelativePath}`
-      : ossRelativePath;
-    
     try {
       const result = await uploadFile(file.localPath, ossPath);
-      
-      // 构建 CDN URL（指向 assetsFolder 下的路径）
-      const ossUrl = CDN_FULL_PATH 
-        ? `${CDN_FULL_PATH}${ossRelativePath}`
+
+      // 构建 CDN URL
+      const ossUrl = CDN_FULL_PATH
+        ? `${CDN_FULL_PATH}${file.relativePath}`
         : result.url;
       
       urlMap[`/${file.relativePath}`] = ossUrl;
@@ -264,10 +257,10 @@ async function main() {
   //     const indexPath = path.join(distPath, 'index.html');
   //     let indexContent = fs.readFileSync(indexPath, 'utf-8');
       
-  //     // 替换所有 /assets/ 开头的路径为完整 CDN 路径（映射到 assetsFolder）
+  //     // 替换所有 /assets/ 开头的路径为完整 CDN 路径
   //     indexContent = indexContent.replace(
   //       /(["'])\/?assets\//g,
-  //       `$1${CDN_FULL_PATH}${OSS_CONFIG.assetsFolder}/`
+  //       `$1${CDN_FULL_PATH}assets/`
   //     );
       
   //     fs.writeFileSync(indexPath, indexContent, 'utf-8');
