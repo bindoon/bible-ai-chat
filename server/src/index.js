@@ -16,6 +16,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
+  path: '/api/rtc/socket.io',
   cors: {
     origin: true,
     credentials: true
@@ -51,7 +52,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // 生成 RTC Token
-app.post('/api/token', (req, res) => {
+app.post('/api/rtc/token', (req, res) => {
   try {
     const { channelId, userId } = req.body;
 
@@ -194,7 +195,7 @@ server.listen(PORT, HOST, () => {
   console.log(`✅ Token server running on:`);
   console.log(`   - Local:   http://localhost:${PORT}`);
   console.log(`   - Network: http://${localIP}:${PORT}`);
-  console.log(`📝 API endpoint: http://localhost:${PORT}/api/token`);
+  console.log(`📝 API endpoint: http://localhost:${PORT}/api/rtc/token`);
   console.log(`🏥 Health check: http://localhost:${PORT}/health`);
   console.log(`🔌 Socket.io ready for signaling`);
 

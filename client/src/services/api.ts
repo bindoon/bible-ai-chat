@@ -17,7 +17,7 @@ export interface TokenData {
  */
 export async function getToken(channelId: string, userId: string): Promise<TokenData> {
   try {
-    const response = await fetch(`${API_BASE_URL}/token`, {
+    const response = await fetch(`${API_BASE_URL}/rtc/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -150,7 +150,7 @@ export default function Connection() {
 
     useEffect(() => {
         // Socket connection for stats
-        socketRef.current = io(API_URL);
+        socketRef.current = io(API_URL, { path: '/api/rtc/socket.io' });
 
         socketRef.current.on('connect', () => {
             console.log('Connected to stats server');
