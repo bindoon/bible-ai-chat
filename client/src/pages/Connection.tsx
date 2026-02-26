@@ -163,7 +163,7 @@ export default function Connection() {
         });
 
         // Initial fetch
-        fetch(`${API_URL}/api/stats`)
+        fetch(`${API_URL}/api/rtc/stats`)
             .then(res => res.json())
             .then(data => setStats(data))
             .catch(err => console.error('Failed to fetch stats:', err));
@@ -191,7 +191,7 @@ export default function Connection() {
         e.preventDefault();
         setFormStatus('submitting');
         try {
-            const res = await fetch(`${API_URL}/api/contact`, {
+            const res = await fetch(`${API_URL}/api/rtc/contact`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(form)

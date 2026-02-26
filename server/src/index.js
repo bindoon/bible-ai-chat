@@ -145,12 +145,12 @@ io.on('connection', (socket) => {
 // --------------------------------------------------------------------------
 
 // 1. Get current stats
-app.get('/api/stats', (req, res) => {
+app.get('/api/rtc/stats', (req, res) => {
   res.json(getStats());
 });
 
 // 2. Submit contact form
-app.post('/api/contact', async (req, res) => {
+app.post('/api/rtc/contact', async (req, res) => {
   const { name, email, question } = req.body;
   if (!email || !question) {
     return res.status(400).json({ error: 'Missing email or question' });
@@ -167,7 +167,7 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // 3. User action (e.g., send heart/message/share)
-app.post('/api/action/:type', async (req, res) => {
+app.post('/api/rtc/action/:type', async (req, res) => {
   const { type } = req.params;
   // Supported types: 'messages', 'followers' (request follow), etc.
   if (['messages', 'followers', 'visitors'].includes(type)) {
