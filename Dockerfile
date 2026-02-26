@@ -7,6 +7,9 @@ FROM crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstd
 
 WORKDIR /app
 
+# 配置 npm 使用淘宝镜像源（与 package-lock.json 一致）
+RUN npm config set registry https://registry.npmmirror.com
+
 # 复制 workspace 配置 (server/client 共享根级 package-lock.json)
 COPY package*.json ./
 COPY server/package.json ./server/
@@ -43,8 +46,8 @@ RUN chmod +x /docker-entrypoint.sh
 
 # 暴露端口
 # 80: Nginx (前端)
-# 3001: Node.js API (后端)
-EXPOSE 80 3001
+# 3020: Node.js API (后端)
+EXPOSE 80 3020
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
