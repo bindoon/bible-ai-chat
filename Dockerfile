@@ -1,23 +1,8 @@
 # 多阶段构建 Dockerfile
-# Stage 1: 构建前端
-FROM crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstdocker:24-alpine AS frontend-builder
+# 前端资源已通过 `npm run build:web` 在本地构建并上传到 OSS，
+# Docker 镜像只需打包 index.html（资源路径已指向 CDN）
 
-WORKDIR /app
-
-# 复制项目文件
-COPY package*.json ./
-COPY client/package*.json ./client/
-
-# 安装依赖
-RUN npm install
-
-# 复制前端源码
-COPY client ./client
-
-# 构建前端
-RUN npm run build -w client
-
-# Stage 2: 准备后端依赖
+# Stage 1: 准备后端依赖
 FROM crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstdocker:24-alpine AS backend-builder
 
 WORKDIR /app
@@ -39,8 +24,8 @@ WORKDIR /app
 # 安装 nginx 用于服务前端静态文件
 RUN apk add --no-cache nginx
 
-# 从构建阶段复制前端构建产物
-COPY --from=frontend-builder /app/client/dist /usr/share/nginx/html
+# 复制前端 index.html（资源已指向 OSS/CDN，无需打包静态资源）
+COPY client/dist/index.html /usr/share/nginx/html/
 
 # 从构建阶段复制后端代码和依赖
 COPY --from=backend-builder /app/node_modules ./node_modules

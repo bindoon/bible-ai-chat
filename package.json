@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w client\" \"npm run dev -w server\"",
     "build": "npm run build -w client",
+    "build:web": "npm run build -w client && node scripts/upload-oss.js",
     "server": "npm run dev -w server",
     "client": "npm run dev -w client",
     "pm2:start": "pm2 start ecosystem.config.cjs",
@@ -19,6 +20,7 @@
     "pm2:monit": "pm2 monit"
   },
   "devDependencies": {
+    "ali-oss": "^6.23.0",
     "concurrently": "^8.2.2"
   }
 }

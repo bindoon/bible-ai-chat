@@ -6,7 +6,7 @@ services:
     container_name: voice-chat-app
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8080:80"   # 仅宿主机本地可访问，避免占用公网 80
+      - "127.0.0.1:8200:80"   # 仅宿主机本地可访问，避免占用公网 80
       # - "3001:3001"          # API 端口 (调试用，通常不暴露)
     environment:
       # 阿里云 RTC 配置 - 从 .env 文件或环境变量读取
