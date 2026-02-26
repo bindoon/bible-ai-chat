@@ -42,7 +42,7 @@ stages:
               - key: OSS_ACCESS_KEY_ID
                 value: YOUR_OSS_KEY_ID
               - key: OSS_ACCESS_KEY_SECRET
-                value: YOUR_OSS_KEY_SECRET
+                value: ***
               ifGivenShell: false
               run: |-
                 # input your command here
@@ -74,11 +74,11 @@ stages:
           - key: APP_NAME
             value: rtcserver
           - key: ALIYUN_APP_KEY
-            value: bb194cf6626d48a888fc4257e4361106
+            value: ***
           - key: IMAGE
             value: crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstdocker:build
           - key: DOCKER_PASSWORD
-            value: Qianchen_0
+            value: ***
           - key: ALIYUN_APP_ID
             value: n5nnqhih
           - key: EXPOSE_PORT
