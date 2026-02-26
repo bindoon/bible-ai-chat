@@ -14,7 +14,7 @@ COPY client/package.json ./client/
 
 # 安装所有 workspace 依赖，然后清理 client 依赖
 # 由于 workspaces 的依赖管理机制，需要先安装全部，再删除不需要的
-RUN npm install && rm -rf client/node_modules
+RUN npm install
 
 # Stage 3: 生产镜像
 FROM crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstdocker:24-alpine
