@@ -9,7 +9,7 @@ COPY package*.json ./
 COPY client/package*.json ./client/
 
 # 安装依赖
-RUN npm ci
+RUN npm install
 
 # 复制前端源码
 COPY client ./client
@@ -28,7 +28,7 @@ COPY server/package.json ./server/
 COPY client/package.json ./client/
 
 # 仅安装 server 生产依赖
-RUN npm ci --workspace=server --omit=dev
+RUN npm install --workspace=server --omit=dev
 
 # Stage 3: 生产镜像
 FROM crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstdocker:24-alpine
