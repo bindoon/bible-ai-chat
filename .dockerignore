@@ -1,6 +1,5 @@
-# Node modules
-node_modules
-*/node_modules
+# Node modules (只排除 client 的，保留 server 的用于生产环境)
+client/node_modules
 npm-debug.log*
 
 # 构建产物

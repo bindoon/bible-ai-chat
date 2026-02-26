@@ -7,17 +7,12 @@ FROM crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstd
 
 WORKDIR /app
 
-# 配置 npm 使用淘宝镜像源（与 package-lock.json 一致）
-RUN npm config set registry https://registry.npmmirror.com
+# 直接复制本地已编译好的 node_modules（workspace 模式下所有依赖在根目录）
+COPY node_modules ./node_modules
 
-# 复制 workspace 配置 (server/client 共享根级 package-lock.json)
-COPY package*.json ./
+# 复制 package.json 用于后续引用
+COPY package.json ./
 COPY server/package.json ./server/
-COPY client/package.json ./client/
-
-# 安装所有 workspace 依赖，然后清理 client 依赖
-# 由于 workspaces 的依赖管理机制，需要先安装全部，再删除不需要的
-RUN npm install
 
 # Stage 3: 生产镜像
 FROM crpi-jla89lkg02vybhoy.cn-hangzhou.personal.cr.aliyuncs.com/frankqian/firstdocker:24-alpine
