@@ -10,11 +10,10 @@ mkdir -p /run/nginx
 
 # 检查必需的环境变量
 if [ -z "$ALIYUN_APP_ID" ] || [ -z "$ALIYUN_APP_KEY" ]; then
-    echo "❌ Error: ALIYUN_APP_ID and ALIYUN_APP_KEY must be set"
-    exit 1
+    echo "⚠️  Warning: ALIYUN_APP_ID or ALIYUN_APP_KEY not set, RTC token generation will fail"
+else
+    echo "✅ RTC environment variables verified"
 fi
-
-echo "✅ Environment variables verified"
 
 # 启动 nginx (后台运行)
 echo "🌐 Starting Nginx..."

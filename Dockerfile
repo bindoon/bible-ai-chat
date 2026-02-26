@@ -22,12 +22,13 @@ FROM node:24-alpine AS backend-builder
 
 WORKDIR /app
 
-# 复制后端 package.json
-COPY server/package*.json ./server/
+# 复制 workspace 配置 (server/client 共享根级 package-lock.json)
+COPY package*.json ./
+COPY server/package.json ./server/
+COPY client/package.json ./client/
 
-# 安装生产依赖
-WORKDIR /app/server
-RUN npm ci --omit=dev
+# 仅安装 server 生产依赖
+RUN npm ci --workspace=server --omit=dev
 
 # Stage 3: 生产镜像
 FROM node:24-alpine
@@ -42,8 +43,9 @@ RUN apk add --no-cache nginx
 COPY --from=frontend-builder /app/client/dist /usr/share/nginx/html
 
 # 从构建阶段复制后端代码和依赖
-COPY --from=backend-builder /app/server/node_modules ./server/node_modules
+COPY --from=backend-builder /app/node_modules ./node_modules
 COPY server/src ./server/src
+COPY server/data ./server/data
 COPY server/package.json ./server/
 
 # 复制 nginx 配置
