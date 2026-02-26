@@ -108,8 +108,9 @@ stages:
 
             DATA_DIR="/home/admin/rtc/data"
 
-            # 4. 创建数据目录（如果不存在）
+            # 4. 创建数据目录并设置权限
             mkdir -p "${DATA_DIR}"
+            chmod 777 "${DATA_DIR}"
 
             # 5. 运行新容器
             # 注意：确保 IMAGE 变量包含了完整的私有仓库前缀

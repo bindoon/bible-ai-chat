@@ -259,40 +259,40 @@ async function main() {
   }
   
   // 替换 index.html 中的资源路径
-  if (CDN_FULL_PATH) {
-    try {
-      const indexPath = path.join(distPath, 'index.html');
-      let indexContent = fs.readFileSync(indexPath, 'utf-8');
+  // if (CDN_FULL_PATH) {
+  //   try {
+  //     const indexPath = path.join(distPath, 'index.html');
+  //     let indexContent = fs.readFileSync(indexPath, 'utf-8');
       
-      // 替换所有 /assets/ 开头的路径为完整 CDN 路径（映射到 assetsFolder）
-      indexContent = indexContent.replace(
-        /(["'])\/?assets\//g,
-        `$1${CDN_FULL_PATH}${OSS_CONFIG.assetsFolder}/`
-      );
+  //     // 替换所有 /assets/ 开头的路径为完整 CDN 路径（映射到 assetsFolder）
+  //     indexContent = indexContent.replace(
+  //       /(["'])\/?assets\//g,
+  //       `$1${CDN_FULL_PATH}${OSS_CONFIG.assetsFolder}/`
+  //     );
       
-      fs.writeFileSync(indexPath, indexContent, 'utf-8');
-      console.log('✅ 已替换 index.html 中的资源路径\n');
-    } catch (error) {
-      console.error('❌ 替换 index.html 路径失败:', error.message);
-    }
-  } else {
-    console.log('⚠️  未配置 CDN，跳过 index.html 路径替换\n');
-  }
+  //     fs.writeFileSync(indexPath, indexContent, 'utf-8');
+  //     console.log('✅ 已替换 index.html 中的资源路径\n');
+  //   } catch (error) {
+  //     console.error('❌ 替换 index.html 路径失败:', error.message);
+  //   }
+  // } else {
+  //   console.log('⚠️  未配置 CDN，跳过 index.html 路径替换\n');
+  // }
   
-  // 可选：也上传 index.html
-  if (process.env.UPLOAD_INDEX_HTML === 'true') {
-    const indexPath = path.join(distPath, 'index.html');
-    const indexOssPath = OSS_CONFIG.basePath 
-      ? `${OSS_CONFIG.basePath}/index.html`
-      : 'index.html';
+  // // 可选：也上传 index.html
+  // if (process.env.UPLOAD_INDEX_HTML === 'true') {
+  //   const indexPath = path.join(distPath, 'index.html');
+  //   const indexOssPath = OSS_CONFIG.basePath 
+  //     ? `${OSS_CONFIG.basePath}/index.html`
+  //     : 'index.html';
     
-    try {
-      await uploadFile(indexPath, indexOssPath);
-      console.log(`✅ index.html 已上传到 OSS`);
-    } catch (error) {
-      console.error('❌ index.html 上传失败');
-    }
-  }
+  //   try {
+  //     await uploadFile(indexPath, indexOssPath);
+  //     console.log(`✅ index.html 已上传到 OSS`);
+  //   } catch (error) {
+  //     console.error('❌ index.html 上传失败');
+  //   }
+  // }
   
   console.log('\n✨ 所有操作完成！');
 }
