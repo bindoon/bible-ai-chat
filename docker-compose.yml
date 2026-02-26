@@ -8,15 +8,15 @@ services:
     container_name: voice-chat-app
     restart: unless-stopped
     ports:
-      - "80:80"      # HTTP 访问
-      - "3001:3001"  # API 端口 (可选，用于调试)
+      - "127.0.0.1:8080:80"   # 仅宿主机本地可访问，避免占用公网 80
+      # - "3001:3001"          # API 端口 (调试用，通常不暴露)
     environment:
       # 阿里云 RTC 配置 - 从 .env 文件或环境变量读取
       - ALIYUN_APP_ID=${ALIYUN_APP_ID}
       - ALIYUN_APP_KEY=${ALIYUN_APP_KEY}
       - NODE_ENV=production
       # 可选配置
-      - PORT=3001
+      - PORT=3020
     # 环境变量文件 (本地开发使用)
     env_file:
       - ./server/.env

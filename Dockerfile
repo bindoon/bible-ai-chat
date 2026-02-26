@@ -1,6 +1,6 @@
 # 多阶段构建 Dockerfile
 # Stage 1: 构建前端
-FROM node:18-alpine AS frontend-builder
+FROM node:24-alpine AS frontend-builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ COPY client ./client
 RUN npm run build -w client
 
 # Stage 2: 准备后端依赖
-FROM node:18-alpine AS backend-builder
+FROM node:24-alpine AS backend-builder
 
 WORKDIR /app
 
@@ -30,7 +30,7 @@ WORKDIR /app/server
 RUN npm ci --omit=dev
 
 # Stage 3: 生产镜像
-FROM node:18-alpine
+FROM node:24-alpine
 
 # 设置工作目录
 WORKDIR /app

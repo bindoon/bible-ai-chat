@@ -31,3 +31,4 @@ Thumbs.db
 .eslintcache
 server/data/contacts.json
 server/data/stats.json
+server/data/visitors.json
