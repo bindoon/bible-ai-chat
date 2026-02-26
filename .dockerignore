@@ -4,7 +4,7 @@ node_modules
 npm-debug.log*
 
 # 构建产物
-client/dist
+# client/dist  # 注释掉，因为 Docker 需要 dist/index.html
 .cache
 
 # 开发文件
