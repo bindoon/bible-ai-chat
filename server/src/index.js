@@ -7,6 +7,7 @@ import { Server } from 'socket.io';
 
 import tokenGenerator from '@dingrtc/token-generator';
 import { loadStats, saveStats, getStats, incrementStat, saveContact, updateActiveUsers, recordVisit } from './stats.js';
+import { loadTopics, getTopics, addTopic, likeTopic } from './topics.js';
 
 const { produce } = tokenGenerator;
 
@@ -179,6 +180,35 @@ app.post('/api/rtc/action/:type', async (req, res) => {
   }
 });
 
+// --------------------------------------------------------------------------
+// Hot Topics API
+// --------------------------------------------------------------------------
+
+// 1. Get all topics
+app.get('/api/rtc/topics', (req, res) => {
+  res.json(getTopics());
+});
+
+// 2. Submit a new topic
+app.post('/api/rtc/topics', async (req, res) => {
+  const { topic } = req.body;
+  if (!topic) {
+    return res.status(400).json({ error: 'Missing topic' });
+  }
+
+  const updatedTopics = await addTopic(topic);
+  io.emit('topics-update', updatedTopics);
+  res.json(updatedTopics);
+});
+
+// 3. Like a topic
+app.post('/api/rtc/topics/:id/like', async (req, res) => {
+  const { id } = req.params;
+  const updatedTopics = await likeTopic(id);
+  io.emit('topics-update', updatedTopics);
+  res.json(updatedTopics);
+});
+
 
 // --------------------------------------------------------------------------
 // Start Server
@@ -187,6 +217,11 @@ app.post('/api/rtc/action/:type', async (req, res) => {
 // Initial stats load
 loadStats().then(() => {
   console.log('Stats loaded');
+});
+
+// Initial topics load
+loadTopics().then(() => {
+  console.log('Topics loaded');
 });
 
 // 启动服务器
