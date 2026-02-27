@@ -2,10 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WithJesus</title>
-    <script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+        <script>
     !(function(c,b,d,a){c[a]||(c[a]={});c[a]=
     { 
       endpoint: 'https://proj-xtrace-a76a52e5f830803d4e32f5278de5d249-us-west-1.us-west-1.log.aliyuncs.com/rum/web/v2?workspace=default-cms-1524521746250607-us-west-1&service_id=f0ebmdqdf3@b0ba71d1b3864cbd0f714',
@@ -35,9 +39,5 @@
     with(b)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("crossorigin","",src=d)
 })(window, document, "https://sdk.rum.aliyuncs.com/v2/browser-sdk.js", "__rum");
 </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
