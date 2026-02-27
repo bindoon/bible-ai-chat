@@ -86,16 +86,7 @@ function InviteModal({ onClose, lang = 'en' }: { onClose: () => void, lang?: 'en
       <div className="modal-content invite-modal" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}>✕</button>
         <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>{t.title}</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-          <div style={{ fontSize: '4rem' }}>📞</div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <div style={{ fontSize: '3rem', color: '#6366f1' }}>👤</div>
-            <div style={{ fontSize: '3rem', color: '#6366f1', opacity: 0.7 }}>➕</div>
-            <div style={{ fontSize: '3rem', color: '#6366f1' }}>👤</div>
-            <div style={{ fontSize: '3rem', color: '#6366f1', opacity: 0.7 }}>➕</div>
-            <div style={{ fontSize: '3rem', color: '#6366f1' }}>👤</div>
-            <div style={{ fontSize: '3rem', color: '#6366f1', opacity: 0.7 }}>➕</div>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem'}}>
         </div>
         <div style={{ marginBottom: '1.5rem', padding: '0.75rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '8px', fontSize: '0.9rem', color: '#6366f1', wordBreak: 'break-all' }}>
           {inviteUrl}
@@ -266,6 +257,9 @@ export default function Connection() {
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [topics, setTopics] = useState<any[]>([]);
   const [showLikeNotification, setShowLikeNotification] = useState(false);
+  const [newTopic, setNewTopic] = useState('');
+  const [showAllTopics, setShowAllTopics] = useState(false);
+  const [topicSubmitStatus, setTopicSubmitStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   // const [showPrivacy, setShowPrivacy] = useState(false);
   const socketRef = useRef<any>(null);
 
@@ -350,6 +344,34 @@ export default function Connection() {
     }
   };
 
+  const handleSubmitTopic = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTopic.trim()) return;
+
+    setTopicSubmitStatus('submitting');
+    try {
+      const res = await fetch(`${API_URL}/api/rtc/topics`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: newTopic })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTopics(data.topics || []);
+        setNewTopic('');
+        setTopicSubmitStatus('success');
+        setTimeout(() => setTopicSubmitStatus('idle'), 2000);
+      } else {
+        setTopicSubmitStatus('error');
+        setTimeout(() => setTopicSubmitStatus('idle'), 2000);
+      }
+    } catch (err) {
+      console.error('Failed to submit topic:', err);
+      setTopicSubmitStatus('error');
+      setTimeout(() => setTopicSubmitStatus('idle'), 2000);
+    }
+  };
+
   const t = {
     title: lang === 'en' ? 'Connecting the World through Grace, Shepherding Souls into Peace.' : '以大愛連結世界，為靈魂搭建避風港。',
     subtitle: lang === 'en'
@@ -370,6 +392,10 @@ export default function Connection() {
     acceptBtn: lang === 'en' ? 'Accept & Continue' : '接受並繼續',
     hotTopicsTitle: lang === 'en' ? 'Hot Topics' : '热门话题',
     hotTopicsSubtitle: lang === 'en' ? 'I will compile your concerns and invite qualified pastors to answer them.' : '我们将最受大家关切的话题，邀请和配给合适的牧师来给大家解答。',
+    submitTopicPlaceholder: lang === 'en' ? 'Describe the topic you are interested in, the more people, the more likely to invite qualified pastors to connect and answer you.' : '描述你关注的话题，认可人数多，将邀请适合的牧师来与你语音和解答。',
+    submitTopicBtn: lang === 'en' ? 'Submit' : '提交',
+    viewAllBtn: lang === 'en' ? 'View All' : '查看全部',
+    collapseBtn: lang === 'en' ? 'Collapse' : '收起',
   };
 
   return (
@@ -447,25 +473,78 @@ export default function Connection() {
           <h3 style={{ marginBottom: '1rem' }}>{t.hotTopicsTitle}</h3>
           <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '1.5rem' }}>{t.hotTopicsSubtitle}</p>
 
-          <div className="topics-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
-            {topics.slice(0, 3).map((topic) => (
-              <div key={topic.id} className="topic-item" style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.5)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '2rem' }}>👤</div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ marginBottom: '0.5rem' }}>{topic.text}</p>
+          <div className="topics-list-container" style={{
+            maxHeight: showAllTopics ? 'none' : '400px',
+            overflowY: showAllTopics ? 'visible' : 'auto',
+            marginBottom: '1rem',
+            paddingRight: '0.5rem'
+          }}>
+            <div className="topics-list" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {(showAllTopics ? topics : topics.slice(0, 3)).map((topic) => (
+                <div key={topic.id} className="topic-item" style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', padding: '1rem', background: 'rgba(255, 255, 255, 0.5)', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '2rem' }}>👤</div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ marginBottom: '0.5rem' }}>{topic.text}</p>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+                    <button
+                      onClick={() => handleLikeTopic(topic.id)}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem' }}
+                    >
+                      👍
+                    </button>
+                    <span style={{ fontSize: '0.9rem', color: '#6366f1', fontWeight: 'bold' }}>{topic.likes}</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-                  <button
-                    onClick={() => handleLikeTopic(topic.id)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.5rem' }}
-                  >
-                    👍
-                  </button>
-                  <span style={{ fontSize: '0.9rem', color: '#6366f1', fontWeight: 'bold' }}>{topic.likes}</span>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
+          {topics.length > 3 && (
+            <button
+              onClick={() => setShowAllTopics(!showAllTopics)}
+              className="leave-btn"
+              style={{ marginBottom: '1.5rem', width: '100%' }}
+            >
+              {showAllTopics ? t.collapseBtn : t.viewAllBtn}
+            </button>
+          )}
+
+          {/* Topic Submission Form */}
+          <form onSubmit={handleSubmitTopic} style={{ marginTop: '1.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
+              <input
+                className="form-input"
+                value={newTopic}
+                onChange={(e) => setNewTopic(e.target.value)}
+                placeholder={t.submitTopicPlaceholder}
+                style={{ flex: 1 }}
+                disabled={topicSubmitStatus === 'submitting'}
+              />
+              <button
+                type="submit"
+                className="submit-btn"
+                style={{
+                  padding: '0.8rem 2rem',
+                  minWidth: 'auto',
+                  opacity: topicSubmitStatus === 'submitting' ? 0.6 : 1
+                }}
+                disabled={topicSubmitStatus === 'submitting' || !newTopic.trim()}
+              >
+                {topicSubmitStatus === 'submitting' ? '...' : t.submitTopicBtn}
+              </button>
+            </div>
+            {topicSubmitStatus === 'success' && (
+              <p style={{ marginTop: '0.5rem', color: '#16a34a', fontSize: '0.9rem' }}>
+                {lang === 'en' ? 'Topic submitted successfully!' : '话题提交成功！'}
+              </p>
+            )}
+            {topicSubmitStatus === 'error' && (
+              <p style={{ marginTop: '0.5rem', color: '#ef4444', fontSize: '0.9rem' }}>
+                {lang === 'en' ? 'Failed to submit topic. Please try again.' : '话题提交失败，请重试。'}
+              </p>
+            )}
+          </form>
         </div>
 
         {/* Contact Form */}

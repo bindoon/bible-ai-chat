@@ -684,3 +684,27 @@
         padding: 2rem 1.5rem;
     }
 }
+
+/* Topics List Scrollbar */
+.topics-list-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+}
+
+.topics-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.topics-list-container::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+.topics-list-container::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 4px;
+}
+
+.topics-list-container::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
