@@ -251,7 +251,7 @@ function ActiveSession({ onLeave, lang = 'en' }: { onLeave: () => void, lang?: '
 // --- Main Page Component ---
 export default function Connection() {
   const [joined, setJoined] = useState(false); // Require click to join
-  const [stats, setStats] = useState({ visitors: 1200, messages: 0, emails: 0, activeUsers: 0, pv: 0 });
+  const [stats, setStats] = useState({ visitors: 0, messages: 0, emails: 0, activeUsers: 0, pv: 0 });
   const [lang, setLang] = useState<'en' | 'zh'>('en');
   const [form, setForm] = useState({ name: '', email: '', question: '' });
   const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
