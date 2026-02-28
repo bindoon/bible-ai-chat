@@ -11,6 +11,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@capacitor/device": "^8.0.1",
     "@vitejs/plugin-react": "^5.1.4",
     "aliyun-rts-sdk": "^2.13.8",
     "dingrtc": "^3.9.28",

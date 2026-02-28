@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
+import { Device } from '@capacitor/device';
 import { useRTC } from '../hooks/useRTC';
 import './Connection.css';
 import pastorHoman from '../assets/Pastor_Homan.jpeg';
@@ -58,14 +59,25 @@ const PASTORS = [
   },
 ];
 
+// Module-level cache (mirrors DeviceInfoService.deviceId pattern)
+let _cachedDeviceId: string | null = null;
+
 // Helper to get or create device ID
-const getDeviceId = () => {
-  let id = localStorage.getItem('deviceId');
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem('deviceId', id);
+const getDeviceId = async (): Promise<string> => {
+  if (_cachedDeviceId) {
+    return _cachedDeviceId;
   }
-  return id;
+
+  try {
+    const info = await Device.getId();
+    console.log('[DeviceInfo] Retrieved device ID:', info.identifier);
+    _cachedDeviceId = info.identifier || crypto.randomUUID();
+  } catch (error) {
+    console.error('[DeviceInfo] 获取设备ID失败:', error);
+    _cachedDeviceId = crypto.randomUUID();
+  }
+
+  return _cachedDeviceId!;
 };
 
 // --- Invite Modal Component ---
@@ -267,9 +279,9 @@ export default function Connection() {
     // Socket connection for stats
     socketRef.current = io(API_URL, { path: '/api/rtc/socket.io' });
 
-    socketRef.current.on('connect', () => {
+    socketRef.current.on('connect', async () => {
       console.log('Connected to stats server');
-      const deviceId = getDeviceId();
+      const deviceId = await getDeviceId();
       socketRef.current.emit('join-room', 'connection', deviceId); // Join stats room with deviceId
     });
 
